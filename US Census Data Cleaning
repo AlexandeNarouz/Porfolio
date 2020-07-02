@@ -1,0 +1,60 @@
+Cleaning this US Census Dataframe:
+Unnamed:	 State	TotalPop	Hispanic	          White	            Black	              Native	            Asian	                  Pacific	            Income	          GenderPop
+0	0	Rhode Island	1053661	13.356666666666678%	74.32541666666665%	5.68291666666667%	0.3462500000000001%	3.2474999999999983%	0.035833333333333335%	$59125.270833333336	510388M_543273F
+1	1	South Carolina	4777576	5.056684981684991%	62.888736263736185%	28.75091575091577%	0.2923992673992673%	1.249175824175822%	0.046978021978021964%	$46296.807763401106	2322409M_2455167F
+2	2	South Dakota	843190	3.2396396396396376%	82.50090090090092%	1.4238738738738752%	9.417567567567566%	1.0193693693693688%	0.04189189189189189%	$51805.40540540541	423477M_419713F
+3	3	Tennessee	6499615	4.720026972353339%	73.49008766014822%	18.283816587997297%	0.22663519892110592%	1.4072825354012126%	0.04315576534052599%	$47328.083616587355	3167756M_3331859F
+4	4	Texas	26538614	38.04673809068304%	44.687908934379145%	11.65004782858236%	0.26114405969007126%	3.6696958102161825%	0.06881576430074614%	$55874.522600500095	13171316M_13367298F
+
+#process of cleaning dataframe to be ready for analysis
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import codecademylib3_seaborn
+import glob
+
+df_list=[]
+file_list = glob.glob('states[0-9].csv')#loading in data from 9 states files
+
+for files in file_list:
+  df = pd.read_csv(files)
+  df_list.append(df)
+us_census = pd.concat(df_list) #putting all into one dataframe
+
+print(us_census.head())
+
+#cleaning '$' off income to convert to numerical
+clean_cum = us_census.Income.str[1:]
+us_census['Income']= pd.to_numeric(clean_cum)
+
+#making seperate columns for men and women
+us_census['split'] = us_census.GenderPop.str.split("_")
+us_census['Men']= us_census.split.str.get(0)
+us_census['Women'] = us_census.split.str.get(1)
+us_census = us_census.drop('split',axis = 1)
+us_census['Men'] = us_census.Men.str[:-1]
+us_census['Women'] = us_census.Women.str[:-1]
+us_census['Men'] = pd.to_numeric(us_census['Men'])
+us_census['Women'] = pd.to_numeric(us_census['Women'])
+
+
+
+
+us_census = us_census.fillna(value = {"Women": us_census["TotalPop"] - us_census['Men']})
+
+#checking for duplicates and removing them
+dups = us_census.duplicated()
+print(dups.value_counts())
+us_census = us_census.drop_duplicates()
+
+#plotting women vs income
+plt.scatter(us_census['Women'],us_census['Income'])
+plt.show()
+
+us_census['Hispanic']= us_census.Hispanic.str[:-1]
+us_census['Hispanic']= pd.to_numeric(us_census['Hispanic'])
+us_census = us_census.fillna(value = {'Hispanic': us_census.Hispanic.mean()}) #filling missing values with average
+print(us_census.Hispanic)
+
+plt.hist(us_census.Hispanic)
+plt.show()
