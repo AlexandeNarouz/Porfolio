@@ -1,0 +1,32 @@
+"""This code will use several Python libraries to make a K-Nearest Neighbor classifier that is trained to predict whether a patient has breast cancer. 
+Then find best K value for ideal performance.""""
+
+from sklearn.datasets import load_breast_cancer 
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
+import matplotlib.pyplot as plt
+breast_cancer_data = load_breast_cancer()
+
+print(breast_cancer_data.data[0]) #prints list of integers
+print(breast_cancer_data.target) #prints list of 0s and 1s
+
+#splitting into training and test set
+training_data, validation_data, training_labels,validation_labels = train_test_split(breast_cancer_data.data, breast_cancer_data.target,test_size = 0.2,random_state = 100)
+
+best_score = 0
+accuracies = []
+#creating classifiers with different k values and creating lists of accuracy score
+for k in range(1,101):
+  classifier = KNeighborsClassifier(k)
+  classifier.fit(training_data,training_labels)
+  v = classifier.predict(validation_data)
+  print(v, validation_data)
+  score = classifier.score(validation_data,validation_labels)
+  accuracies.append(score)
+k_list = range(1,101)
+#plotting k value and accuracy to find best k value for highest accuracy
+plt.plot(k_list,accuracies)
+plt.xlabel("k")
+plt.ylabel("validation accuracy")
+plt.title("Breast Cancer Classifier Accuracy")
+plt.show()
