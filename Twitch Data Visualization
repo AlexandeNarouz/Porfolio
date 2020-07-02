@@ -1,0 +1,41 @@
+"""After Quereying Twitch Data with SQL I was to visualize the data on Twitches most popular video game streams""""
+
+import codecademylib3_seaborn
+from matplotlib import pyplot as plt
+import numpy as np
+import pandas as pd
+
+# Bar Graph: Featured Games
+
+games = ["LoL", "Dota 2", "CS:GO", "DayZ", "HOS", "Isaac", "Shows", "Hearth", "WoT", "Agar.io"]
+
+viewers =  [1070, 472, 302, 239, 210, 171, 170, 90, 86, 71]
+plt.bar(range(len(games)), viewers,color = 'green')
+plt.ylabel('views')
+plt.xlabel('Games')
+plt.legend(['Twitch'])
+ax = plt.subplot()
+ax.set_xticks(list(x for x in range(11)))
+ax.set_xticklabels(games,rotation = 20)
+
+# Pie Chart: League of Legends Viewers' Whereabouts
+
+labels = ["US", "DE", "CA", "N/A", "GB", "TR", "BR", "DK", "PL", "BE", "NL", "Others"]
+
+countries = [447, 66, 64, 49, 45, 28, 25, 20, 19, 17, 17, 279]
+colors = ['lightskyblue', 'gold', 'lightcoral', 'gainsboro', 'royalblue', 'lightpink', 'darkseagreen', 'sienna', 'khaki', 'gold', 'violet', 'yellowgreen']
+plt.pie(countries, colors = colors)
+plt.legend(labels)
+plt.show()
+# Line Graph: Time Series Analysis
+
+hour = range(24)
+
+viewers_hour = [30, 17, 34, 29, 19, 14, 3, 2, 4, 9, 5, 48, 62, 58, 40, 51, 69, 55, 76, 81, 102, 120, 71, 63]
+viewers_lower = list(map(lambda x: x - (x*0.15),viewers_hour))
+viewers_upper = list(map(lambda x: x + (x*0.15),viewers_hour))
+plt.plot(hour,viewers_hour)
+ax = plt.subplot()
+ax.set_xticks(hour)
+plt.fill_between(hour,viewers_lower,viewers_upper,alpha = 0.2)
+plt.show()
