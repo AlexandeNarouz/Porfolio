@@ -1,0 +1,22 @@
+#Data on thousands of adoptable dogs are in FetchMaker’s system, and this is a snippet of me analyzing some of that data and performing hypothesis testing.
+
+import numpy as np
+import fetchmaker #data attributes(weight,tail_length,age,color,is_rescue)
+from scipy.stats import binom_test
+from scipy.stats import f_oneway
+
+rottweiler_tl = fetchmaker.get_tail_length('rottweiler')
+print(np.mean(rottweiler_tl), np.std(rottweiler_tl)) #mean and standard deviation of rottweiler
+
+whippet_rescue = fetchmaker.get_is_rescue('whippet') #is_rescue values
+num_whippet_rescues = np.count_nonzero(whippet_rescue) # counting where whippet_rescue is 1
+num_whippets = np.size(whippet_rescue)
+
+print(float(num_whippet_rescues)/float(num_whippets))
+pval = binom_test(num_whippet_rescues,num_whippets,.08) #using binomial testing to check if whippets are more likely to be abandoned/rescue dogs
+print(pval) # not sig (> 0.05)
+
+mean_terrier = np.mean(fetchmaker.get_weight('terrier'))
+mean_whippets = np.mean(fetchmaker.get_weight('whippet'))
+mean_pitbull = np.mean(fetchmaker.get_weight('pitbull'))
+print(f_oneway(mean_terrier,mean_whippets,mean_pitbull).pvalue) #Checking if there is a significant difference in the average weights of these three dog breeds using anova testing
