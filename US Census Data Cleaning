@@ -10,7 +10,6 @@ Unnamed:	 State	TotalPop	Hispanic	          White	            Black	            
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import codecademylib3_seaborn
 import glob
 
 df_list=[]
