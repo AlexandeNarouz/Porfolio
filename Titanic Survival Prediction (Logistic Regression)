@@ -1,0 +1,48 @@
+"""Project is to create a Logistic Regression model that predicts which passengers survived the sinking of the Titanic, based on features like age and class."""
+
+import pandas as pd
+import numpy as np
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+
+# Load the passenger data
+passengers = pd.read_csv('passengers.csv')
+print(passengers.head())
+
+# Update sex column to numerical
+passengers['Sex'] = passengers.Sex.map({'male':0,'female':1})
+passengers = passengers.fillna({'Age': passengers.Age.mean()})
+#print(passengers.Age.values)
+
+#Create first/second class data features
+passengers['FirstClass'] = passengers['Pclass'].apply(lambda x: 1 if x ==1 else 0)
+passengers['SecondClass'] = passengers.Pclass.apply(lambda x: 1 if x ==2 else 0)
+
+#Features to be observed
+features = passengers[['Sex','Age','FirstClass','SecondClass']]
+survival = passengers['Survived']
+
+#creating training and testing set
+X_train, X_test, y_train, y_test = train_test_split(features, survival, test_size = 0.8)
+
+#normalizing/scaling feature data
+scaled_data = StandardScaler()
+x_train = scaled_data.fit_transform(X_train)
+x_test = scaled_data.transform(X_test)
+
+#creating the model
+model = LogisticRegression()
+model.fit(x_train, y_train)
+print(model.score(x_train,y_train)) #0.8 accuracy
+print(model.score(x_test,y_test)) #0.78 accuracy
+print(model.coef_) # sex made biggest difference
+
+#making predictions
+Jack = np.array([0.0,20.0,0.0,0.0])
+Rose = np.array([1.0,17.0,1.0,0.0])
+me = np.array([0.0,21.0,1.0,0.0])
+sample_passengers = np.array([Jack,Rose,me])
+sample_passengers = scaled_data.transform(sample_passengers) #normalizing/scaling data
+print(model.predict(sample_passengers))
+print(model.predict_proba(sample_passengers)) #I lived!!!
